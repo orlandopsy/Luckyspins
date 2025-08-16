@@ -1,0 +1,75 @@
+:root{
+  --bg:#0b0f1a;
+  --card:#141b2b;
+  --text:#eaf2ff;
+  --muted:#95a2c2;
+  --primary:#ff3d6e;
+  --accent:#2ef2ff;
+  --btn:#ff3d6e;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,Arial;
+  background: radial-gradient(1000px 600px at 50% -200px, #391132 0, var(--bg) 40%);
+  color:var(--text); display:flex; align-items:center; justify-content:center; padding:20px;
+}
+
+.hidden{display:none}
+
+.card{
+  background:linear-gradient(180deg,#1a2135 0,#0f1524 100%);
+  border:1px solid #24304b; border-radius:16px; padding:24px; width:min(920px,96vw);
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+}
+
+.hero{width:120px; height:120px; object-fit:contain; display:block; margin:0 auto 12px; filter:drop-shadow(0 8px 20px rgba(255,61,110,.45));}
+h1,h2,h3{margin:.2em 0 .5em}
+p,small{color:var(--muted)}
+
+.user-row{display:flex; gap:12px; margin-top:10px}
+input[type="text"]{
+  flex:1; padding:12px 14px; border-radius:10px; border:1px solid #2b3550; background:#0c1220; color:var(--text);
+}
+button{
+  padding:12px 16px; border:none; border-radius:10px; cursor:pointer; font-weight:600;
+  background:#223053; color:var(--text); transition:transform .05s ease, filter .2s ease;
+}
+button:active{transform:translateY(1px)}
+button.primary{background:linear-gradient(180deg, #ff5f89, #ff2f61); box-shadow:0 10px 30px rgba(255,61,110,.35)}
+button.ghost{background:transparent; border:1px solid #2b3550}
+
+.hud{display:flex; justify-content:space-between; gap:16px; margin-bottom:16px; width:min(920px,96vw)}
+
+.wheel-area{
+  position:relative; display:flex; flex-direction:column; align-items:center; gap:16px; margin: 10px auto 20px;
+}
+#wheel{
+  width:min(420px,90vw);
+  aspect-ratio:1/1;
+  border-radius:50%;
+  user-select:none;
+  pointer-events:none;
+  filter: drop-shadow(0 16px 40px rgba(0,0,0,.6)) saturate(1.2);
+  transform: rotate(0deg);
+  transition: transform .2s linear;
+}
+/* Puntero (flecha fija arriba) */
+.pointer{
+  position:absolute; top:-6px; width:0; height:0;
+  border-left:14px solid transparent; border-right:14px solid transparent; border-bottom:26px solid var(--accent);
+  filter: drop-shadow(0 6px 10px rgba(46,242,255,.35));
+}
+
+#qa{margin: 10px auto; width:min(920px,96vw)}
+.options{display:grid; gap:10px; margin:12px 0}
+.options label{
+  display:flex; align-items:center; gap:10px; padding:12px; border:1px solid #273250; border-radius:10px; background:#0c1220; cursor:pointer;
+}
+.options input{accent-color:var(--primary); transform: scale(1.15)}
+.qa-actions{display:flex; gap:10px}
+
+#ranking{margin:8px 0 0}
+#ranking li{margin:4px 0}
+
+#confetti{position:fixed; inset:0; pointer-events:none}
