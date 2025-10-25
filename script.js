@@ -35,6 +35,7 @@ let score = 0;
 let remaining = [];
 let current = null;
 let spinning = false;
+let preguntaNum = 0;
 
 /* =========================
    Selectores
@@ -55,12 +56,9 @@ const answersForm = $('#answers');
 const btnSubmit = $('#btnSubmit');
 const btnNext = $('#btnNext');
 const feedback = $('#feedback');
+const contador = document.getElementById('contador');
 
 const rankList = $('#ranking');
-
-// 🔹 Contador de preguntas
-const contador = document.getElementById('contador');
-let preguntaNum = 0;
 
 /* =========================
    Inicio / Pantalla
@@ -73,32 +71,17 @@ $('#btnStart').addEventListener('click', () => {
   gameMain.classList.remove('hidden');
   hudUser.textContent = username;
   score = 0;
-  hudScore.textContent = score;
-
-  // 🔹 Reiniciar contador
   preguntaNum = 0;
-  if (contador) contador.textContent = '';
-
-  // 🔹 Seleccionar 10 preguntas al azar
-  remaining = seleccionarPreguntasAleatorias(QUESTIONS, 10);
-
-  updateRanking(); // pinta ranking actual
+  hudScore.textContent = score;
+  
+  // 🔹 Seleccionar solo 10 preguntas aleatorias
+  remaining = shuffle([...QUESTIONS]).slice(0, 10);
+  
+  updateRanking();
 });
 
 /* =========================
-   🔹 Función nueva: seleccionar N preguntas aleatorias
-   ========================= */
-function seleccionarPreguntasAleatorias(arr, n) {
-  const copia = [...arr];
-  for (let i = copia.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copia[i], copia[j]] = [copia[j], copia[i]];
-  }
-  return copia.slice(0, n);
-}
-
-/* =========================
-   Girar ruleta con SONIDO (Web Audio)
+   Girar ruleta con sonido
    ========================= */
 btnSpin.addEventListener('click', () => spinWheel());
 
@@ -161,11 +144,9 @@ function showQuestion(){
     winGame();
     return;
   }
-  current = remaining.pop(); // toma una y evita repetición
-
-  // 🔹 Actualiza el número de pregunta
+  current = remaining.pop();
   preguntaNum++;
-  if (contador) contador.textContent = `Pregunta: ${preguntaNum}`;
+  contador.textContent = `Pregunta: ${preguntaNum}`;
 
   qText.textContent = current.q;
   answersForm.innerHTML = '';
@@ -249,7 +230,6 @@ $('#btnRestart').addEventListener('click', ()=>{
   startSec.classList.remove('hidden');
 });
 
-/* confeti simple en canvas */
 function confettiBurst(){
   const canvas = $('#confetti');
   const ctx = canvas.getContext('2d');
@@ -260,34 +240,4 @@ function confettiBurst(){
     vx: (Math.random()*2-1)*2,
     vy: 2+Math.random()*3,
     size: 4+Math.random()*6,
-    color: `hsl(${Math.random()*360},100%,60%)`,
-    rot: Math.random()*Math.PI, vr: (Math.random()*2-1)*0.2
-  }));
-  let t=0;
-  function loop(){
-    ctx.clearRect(0,0,W,H);
-    parts.forEach(p=>{
-      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
-      ctx.save();
-      ctx.translate(p.x,p.y);
-      ctx.rotate(p.rot);
-      ctx.fillStyle=p.color;
-      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
-      ctx.restore();
-    });
-    t++;
-    if(t<300) requestAnimationFrame(loop);
-  }
-  loop();
-}
 
-/* =========================
-   Utilidad: mezclar array
-   ========================= */
-function shuffle(arr){
-  for(let i=arr.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]]=[arr[j],arr[i]];
-  }
-  return arr;
-}
