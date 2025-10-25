@@ -58,6 +58,10 @@ const feedback = $('#feedback');
 
 const rankList = $('#ranking');
 
+// 🔹 Contador de preguntas
+const contador = document.getElementById('contador');
+let preguntaNum = 0;
+
 /* =========================
    Inicio / Pantalla
    ========================= */
@@ -70,13 +74,31 @@ $('#btnStart').addEventListener('click', () => {
   hudUser.textContent = username;
   score = 0;
   hudScore.textContent = score;
-  remaining = shuffle([...QUESTIONS]);
+
+  // 🔹 Reiniciar contador
+  preguntaNum = 0;
+  if (contador) contador.textContent = '';
+
+  // 🔹 Seleccionar 10 preguntas al azar
+  remaining = seleccionarPreguntasAleatorias(QUESTIONS, 10);
+
   updateRanking(); // pinta ranking actual
 });
 
 /* =========================
+   🔹 Función nueva: seleccionar N preguntas aleatorias
+   ========================= */
+function seleccionarPreguntasAleatorias(arr, n) {
+  const copia = [...arr];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia.slice(0, n);
+}
+
+/* =========================
    Girar ruleta con SONIDO (Web Audio)
-   - Usamos WebAudio para generar "ticks" sin archivos externos
    ========================= */
 btnSpin.addEventListener('click', () => spinWheel());
 
@@ -87,22 +109,20 @@ function spinWheel(){
   feedback.textContent = '';
   btnSpin.disabled = true;
 
-  const totalSegments = 12;            // aprox. como la imagen
+  const totalSegments = 12;
   const segmentAngle = 360 / totalSegments;
-  const finalAngle = 1440 + Math.random() * 1080; // 4–7 vueltas
-  const duration = 3500;               // ms
+  const finalAngle = 1440 + Math.random() * 1080;
+  const duration = 3500;
   const start = performance.now();
 
   let lastTickIndex = -1;
 
   function frame(now){
     const t = Math.min(1, (now - start)/duration);
-    // desaceleración cúbica
     const eased = 1 - Math.pow(1 - t, 3);
     const angle = eased * finalAngle;
     wheelImg.style.transform = `rotate(${angle}deg)`;
 
-    // TICK cuando pasamos por una división del segmento
     const idx = Math.floor(((angle % 360)+0.0001) / segmentAngle);
     if(idx !== lastTickIndex){
       playTick();
@@ -120,7 +140,6 @@ function spinWheel(){
   requestAnimationFrame(frame);
 }
 
-// Sonido: un "click" corto con WebAudio (sin archivos)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playTick(){
   const o = audioCtx.createOscillator();
@@ -130,7 +149,6 @@ function playTick(){
   g.gain.value = 0.12;
   o.connect(g); g.connect(audioCtx.destination);
   o.start();
-  // decay rapidísimo
   g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.06);
   o.stop(audioCtx.currentTime + 0.07);
 }
@@ -144,6 +162,11 @@ function showQuestion(){
     return;
   }
   current = remaining.pop(); // toma una y evita repetición
+
+  // 🔹 Actualiza el número de pregunta
+  preguntaNum++;
+  if (contador) contador.textContent = `Pregunta: ${preguntaNum}`;
+
   qText.textContent = current.q;
   answersForm.innerHTML = '';
   const letters = ['A','B','C','D'];
@@ -268,18 +291,3 @@ function shuffle(arr){
   }
   return arr;
 }
-
-// 🔹 Función para seleccionar N preguntas aleatorias
-function seleccionarPreguntasAleatorias(arr, n) {
-  const copia = [...arr];
-  for (let i = copia.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copia[i], copia[j]] = [copia[j], copia[i]];
-  }
-  return copia.slice(0, n);
-}
-
-// 🔹 Y cuando inicie el juego (después de obtener username), pon esto:
-remaining = seleccionarPreguntasAleatorias(QUESTIONS, 10);
-
-
