@@ -268,3 +268,16 @@ function shuffle(arr){
   }
   return arr;
 }
+// 🔹 Función para seleccionar N preguntas aleatorias
+function seleccionarPreguntasAleatorias(arr, n) {
+  const copia = [...arr];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia.slice(0, n);
+}
+
+// 🔹 Y cuando inicie el juego (después de obtener username), pon esto:
+remaining = seleccionarPreguntasAleatorias(QUESTIONS, 10);
+
