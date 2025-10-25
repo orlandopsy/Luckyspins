@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <link rel="icon" type="image/png" href="naruto1.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ruleta de Preguntas</title>
+  <link rel="icon" type="image/png" href="naruto1.png">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -21,34 +21,52 @@
     <small>Ganás <strong>10 puntos</strong> por respuesta correcta.</small>
   </section>
 
-  <!-- Juego -->
+  <!-- Juego principal -->
   <main id="game" class="hidden">
     <header class="hud">
       <div>👤 Usuario: <strong id="hudUser">—</strong></div>
       <div>⭐ Puntos: <strong id="hudScore">0</strong></div>
     </header>
 
+    <!-- Área de la ruleta -->
     <section class="wheel-area">
-      <!-- Puntero fijo -->
-      <div class="pointer"></div>
-      <!-- Imagen de ruleta que GIRA -->
-      <img id="wheel" src="wheel.png" alt="Ruleta" />
+      <div class="pointer"></div> <!-- Puntero fijo -->
+      <img id="wheel" src="wheel.png" alt="Ruleta" /> <!-- Imagen de ruleta -->
       <button id="btnSpin" class="primary">Girar</button>
     </section>
 
-    <!-- Preguntas -->
+    <!-- Área de preguntas -->
     <section id="qa" class="card hidden">
-      <p id="contador" class="contador"></p> <!-- ✅ Contador agregado -->
+      <p id="contador" class="contador"></p> <!-- ✅ Contador de preguntas -->
       <h2 id="qText">Pregunta…</h2>
       <form id="answers" class="options">
-        <!-- se rellena por JS con A/B/C/D -->
+        <!-- Se rellena dinámicamente desde JS -->
       </form>
+
       <div class="qa-actions">
-        <button id="btnSubmit" class="primary">R
+        <button id="btnSubmit" class="primary">Responder</button>
+        <button id="btnNext" class="ghost hidden">Siguiente</button>
+      </div>
 
+      <p id="feedback"></p>
+    </section>
 
+    <!-- Ranking -->
+    <section class="card">
+      <h3>🏆 Ranking</h3>
+      <ol id="ranking"></ol>
+    </section>
+  </main>
 
+  <!-- Pantalla final -->
+  <section id="win" class="card hidden">
+    <h2>🎉 ¡Felicidades, <span id="winUser"></span>!</h2>
+    <p>Completaste todas las preguntas con <strong><span id="winScore"></span> puntos</strong>.</p>
+    <button id="btnRestart">Volver a jugar</button>
+    <canvas id="confetti"></canvas>
+  </section>
 
-
-
-
+  <!-- Script principal -->
+  <script src="script.js"></script>
+</body>
+</html>
