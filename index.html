@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><link rel="icon" type="image/png" href="naruto1.png"></head>
+<head>
+  <link rel="icon" type="image/png" href="naruto1.png">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ruleta de Preguntas</title>
@@ -35,35 +36,17 @@
       <button id="btnSpin" class="primary">Girar</button>
     </section>
 
+    <!-- Preguntas -->
     <section id="qa" class="card hidden">
+      <p id="contador" class="contador"></p> <!-- ✅ Contador agregado -->
       <h2 id="qText">Pregunta…</h2>
       <form id="answers" class="options">
         <!-- se rellena por JS con A/B/C/D -->
       </form>
       <div class="qa-actions">
-        <button id="btnSubmit" class="primary">Responder</button>
-        <button id="btnNext" class="ghost hidden">Siguiente</button>
-      </div>
-      <p id="contador"></p>
-    </section>
+        <button id="btnSubmit" class="primary">R
 
-    <section class="card">
-      <h3>🏆 Ranking</h3>
-      <ol id="ranking"></ol>
-    </section>
-  </main>
 
-  <!-- Mensaje final -->
-  <section id="win" class="card hidden">
-    <h2>🎉 ¡Felicidades, <span id="winUser"></span>!</h2>
-    <p>Completaste todas las preguntas con <strong><span id="winScore"></span> puntos</strong>.</p>
-    <button id="btnRestart">Volver a jugar</button>
-    <canvas id="confetti"></canvas>
-  </section>
-
-  <script src="script.js"></script>
-</body>
-</html>
 
 
 
