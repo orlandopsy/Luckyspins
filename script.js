@@ -35,7 +35,6 @@ let score = 0;
 let remaining = [];
 let current = null;
 let spinning = false;
-let preguntaNum = 0;
 
 /* =========================
    Selectores
@@ -56,7 +55,6 @@ const answersForm = $('#answers');
 const btnSubmit = $('#btnSubmit');
 const btnNext = $('#btnNext');
 const feedback = $('#feedback');
-const contador = document.getElementById('contador');
 
 const rankList = $('#ranking');
 
@@ -71,17 +69,14 @@ $('#btnStart').addEventListener('click', () => {
   gameMain.classList.remove('hidden');
   hudUser.textContent = username;
   score = 0;
-  preguntaNum = 0;
   hudScore.textContent = score;
-  
-  // 🔹 Seleccionar solo 10 preguntas aleatorias
-  remaining = shuffle([...QUESTIONS]).slice(0, 10);
-  
-  updateRanking();
+  remaining = shuffle([...QUESTIONS]);
+  updateRanking(); // pinta ranking actual
 });
 
 /* =========================
-   Girar ruleta con sonido
+   Girar ruleta con SONIDO (Web Audio)
+   - Usamos WebAudio para generar "ticks" sin archivos externos
    ========================= */
 btnSpin.addEventListener('click', () => spinWheel());
 
@@ -92,20 +87,22 @@ function spinWheel(){
   feedback.textContent = '';
   btnSpin.disabled = true;
 
-  const totalSegments = 12;
+  const totalSegments = 12;            // aprox. como la imagen
   const segmentAngle = 360 / totalSegments;
-  const finalAngle = 1440 + Math.random() * 1080;
-  const duration = 3500;
+  const finalAngle = 1440 + Math.random() * 1080; // 4–7 vueltas
+  const duration = 3500;               // ms
   const start = performance.now();
 
   let lastTickIndex = -1;
 
   function frame(now){
     const t = Math.min(1, (now - start)/duration);
+    // desaceleración cúbica
     const eased = 1 - Math.pow(1 - t, 3);
     const angle = eased * finalAngle;
     wheelImg.style.transform = `rotate(${angle}deg)`;
 
+    // TICK cuando pasamos por una división del segmento
     const idx = Math.floor(((angle % 360)+0.0001) / segmentAngle);
     if(idx !== lastTickIndex){
       playTick();
@@ -123,6 +120,7 @@ function spinWheel(){
   requestAnimationFrame(frame);
 }
 
+// Sonido: un "click" corto con WebAudio (sin archivos)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function playTick(){
   const o = audioCtx.createOscillator();
@@ -132,6 +130,7 @@ function playTick(){
   g.gain.value = 0.12;
   o.connect(g); g.connect(audioCtx.destination);
   o.start();
+  // decay rapidísimo
   g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.06);
   o.stop(audioCtx.currentTime + 0.07);
 }
@@ -144,10 +143,7 @@ function showQuestion(){
     winGame();
     return;
   }
-  current = remaining.pop();
-  preguntaNum++;
-  contador.textContent = `Pregunta: ${preguntaNum}`;
-
+  current = remaining.pop(); // toma una y evita repetición
   qText.textContent = current.q;
   answersForm.innerHTML = '';
   const letters = ['A','B','C','D'];
@@ -230,6 +226,7 @@ $('#btnRestart').addEventListener('click', ()=>{
   startSec.classList.remove('hidden');
 });
 
+/* confeti simple en canvas */
 function confettiBurst(){
   const canvas = $('#confetti');
   const ctx = canvas.getContext('2d');
@@ -240,4 +237,49 @@ function confettiBurst(){
     vx: (Math.random()*2-1)*2,
     vy: 2+Math.random()*3,
     size: 4+Math.random()*6,
+    color: `hsl(${Math.random()*360},100%,60%)`,
+    rot: Math.random()*Math.PI, vr: (Math.random()*2-1)*0.2
+  }));
+  let t=0;
+  function loop(){
+    ctx.clearRect(0,0,W,H);
+    parts.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.size/2,-p.size/2,p.size,p.size);
+      ctx.restore();
+    });
+    t++;
+    if(t<300) requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+/* =========================
+   Utilidad: mezclar array
+   ========================= */
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// 🔹 Función para seleccionar N preguntas aleatorias
+function seleccionarPreguntasAleatorias(arr, n) {
+  const copia = [...arr];
+  for (let i = copia.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copia[i], copia[j]] = [copia[j], copia[i]];
+  }
+  return copia.slice(0, n);
+}
+
+// 🔹 Y cuando inicie el juego (después de obtener username), pon esto:
+remaining = seleccionarPreguntasAleatorias(QUESTIONS, 10);
+
 
