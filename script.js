@@ -1,6 +1,4 @@
-/* =========================
-   Datos: 20 preguntas (10 CG + 10 Sistemas)
-   ========================= */
+/* ========================= Datos: 20 preguntas (10 CG + 10 Sistemas) ========================= */
 const QUESTIONS = [
   // Cultura general
   { q: "¿Capital de Francia?", a: ["París","Lyon","Marsella","Niza"], correct: 0 },
@@ -27,40 +25,31 @@ const QUESTIONS = [
   { q: "SQL se usa para…", a: ["Redes","Sistemas operativos","Bases de datos","Diseño gráfico"], correct: 2 }
 ];
 
-/* =========================
-   Estado
-   ========================= */
+/* ========================= Estado ========================= */
 let username = null;
 let score = 0;
 let remaining = [];
 let current = null;
 let spinning = false;
 
-/* =========================
-   Selectores
-   ========================= */
+/* ========================= Selectores ========================= */
 const $ = sel => document.querySelector(sel);
 const startSec = $('#start');
 const gameMain = $('#game');
 const winSec = $('#win');
-
 const hudUser = $('#hudUser');
 const hudScore = $('#hudScore');
 const wheelImg = $('#wheel');
 const btnSpin = $('#btnSpin');
-
 const qSection = $('#qa');
 const qText = $('#qText');
 const answersForm = $('#answers');
 const btnSubmit = $('#btnSubmit');
 const btnNext = $('#btnNext');
 const feedback = $('#feedback');
-
 const rankList = $('#ranking');
 
-/* =========================
-   Inicio / Pantalla
-   ========================= */
+/* ========================= Inicio / Pantalla ========================= */
 $('#btnStart').addEventListener('click', () => {
   const val = $('#username').value.trim();
   if (!val) { alert('Escribe tu usuario'); return; }
@@ -74,10 +63,7 @@ $('#btnStart').addEventListener('click', () => {
   updateRanking(); // pinta ranking actual
 });
 
-/* =========================
-   Girar ruleta con SONIDO (Web Audio)
-   - Usamos WebAudio para generar "ticks" sin archivos externos
-   ========================= */
+/* ========================= Girar ruleta con SONIDO (Web Audio) - Usamos WebAudio para generar "ticks" sin archivos externos ========================= */
 btnSpin.addEventListener('click', () => spinWheel());
 
 function spinWheel(){
@@ -86,13 +72,11 @@ function spinWheel(){
   qSection.classList.add('hidden');
   feedback.textContent = '';
   btnSpin.disabled = true;
-
-  const totalSegments = 12;            // aprox. como la imagen
+  const totalSegments = 12; // aprox. como la imagen
   const segmentAngle = 360 / totalSegments;
   const finalAngle = 1440 + Math.random() * 1080; // 4–7 vueltas
-  const duration = 3500;               // ms
+  const duration = 3500; // ms
   const start = performance.now();
-
   let lastTickIndex = -1;
 
   function frame(now){
@@ -101,14 +85,12 @@ function spinWheel(){
     const eased = 1 - Math.pow(1 - t, 3);
     const angle = eased * finalAngle;
     wheelImg.style.transform = `rotate(${angle}deg)`;
-
     // TICK cuando pasamos por una división del segmento
     const idx = Math.floor(((angle % 360)+0.0001) / segmentAngle);
     if(idx !== lastTickIndex){
       playTick();
       lastTickIndex = idx;
     }
-
     if(t < 1){
       requestAnimationFrame(frame);
     }else{
@@ -135,9 +117,7 @@ function playTick(){
   o.stop(audioCtx.currentTime + 0.07);
 }
 
-/* =========================
-   Preguntas y respuestas
-   ========================= */
+/* ========================= Preguntas y respuestas ========================= */
 function showQuestion(){
   if(remaining.length === 0){
     winGame();
@@ -150,10 +130,7 @@ function showQuestion(){
   current.a.forEach((opt, i) => {
     const id = `opt_${Date.now()}_${i}`;
     const row = document.createElement('label');
-    row.innerHTML = `
-      <input type="radio" name="ans" id="${id}" value="${i}">
-      <span><strong>${letters[i]}.</strong> ${opt}</span>
-    `;
+    row.innerHTML = `<input type="radio" name="ans" id="${id}" value="${i}"> <span><strong>${letters[i]}.</strong> ${opt}</span>`;
     answersForm.appendChild(row);
   });
   btnSubmit.classList.remove('hidden');
@@ -182,25 +159,29 @@ btnNext.addEventListener('click', () => {
   qSection.classList.add('hidden');
 });
 
-/* =========================
-   Ranking (localStorage)
-   ========================= */
+/* ========================= Ranking (localStorage) ========================= */
 function loadRanking(){
   try { return JSON.parse(localStorage.getItem('ruleta_ranking')||'[]'); }
   catch{ return []; }
 }
+
 function saveRanking(list){
   localStorage.setItem('ruleta_ranking', JSON.stringify(list));
 }
+
 function saveScore(){
   const list = loadRanking();
   const i = list.findIndex(x => x.user === username);
-  if(i>=0){ list[i].score = Math.max(list[i].score, score); }
-  else{ list.push({user: username, score}); }
+  if(i>=0){
+    list[i].score = Math.max(list[i].score, score);
+  } else{
+    list.push({user: username, score});
+  }
   list.sort((a,b)=>b.score-a.score);
   saveRanking(list);
   updateRanking();
 }
+
 function updateRanking(){
   const list = loadRanking().slice(0,10);
   rankList.innerHTML = '';
@@ -211,9 +192,7 @@ function updateRanking(){
   });
 }
 
-/* =========================
-   Victoria + confeti
-   ========================= */
+/* ========================= Victoria + confeti ========================= */
 function winGame(){
   gameMain.classList.add('hidden');
   winSec.classList.remove('hidden');
@@ -221,6 +200,7 @@ function winGame(){
   $('#winScore').textContent = score;
   confettiBurst();
 }
+
 $('#btnRestart').addEventListener('click', ()=>{
   winSec.classList.add('hidden');
   startSec.classList.remove('hidden');
@@ -233,18 +213,22 @@ function confettiBurst(){
   const W = canvas.width = innerWidth;
   const H = canvas.height = innerHeight;
   const parts = Array.from({length: 150}).map(()=>({
-    x: Math.random()*W, y: -20 - Math.random()*H/2,
+    x: Math.random()*W,
+    y: -20 - Math.random()*H/2,
     vx: (Math.random()*2-1)*2,
     vy: 2+Math.random()*3,
     size: 4+Math.random()*6,
     color: `hsl(${Math.random()*360},100%,60%)`,
-    rot: Math.random()*Math.PI, vr: (Math.random()*2-1)*0.2
+    rot: Math.random()*Math.PI,
+    vr: (Math.random()*2-1)*0.2
   }));
   let t=0;
   function loop(){
     ctx.clearRect(0,0,W,H);
     parts.forEach(p=>{
-      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+      p.x+=p.vx;
+      p.y+=p.vy;
+      p.rot+=p.vr;
       ctx.save();
       ctx.translate(p.x,p.y);
       ctx.rotate(p.rot);
@@ -258,9 +242,7 @@ function confettiBurst(){
   loop();
 }
 
-/* =========================
-   Utilidad: mezclar array
-   ========================= */
+/* ========================= Utilidad: mezclar array ========================= */
 function shuffle(arr){
   for(let i=arr.length-1;i>0;i--){
     const j=Math.floor(Math.random()*(i+1));
@@ -269,17 +251,6 @@ function shuffle(arr){
   return arr;
 }
 
-// 🔹 Función para seleccionar N preguntas aleatorias
-function seleccionarPreguntasAleatorias(arr, n) {
-  const copia = [...arr];
-  for (let i = copia.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copia[i], copia[j]] = [copia[j], copia[i]];
-  }
-  return copia.slice(0, n);
-}
 
-// 🔹 Y cuando inicie el juego (después de obtener username), pon esto:
-remaining = seleccionarPreguntasAleatorias(QUESTIONS, 10);
 
 
