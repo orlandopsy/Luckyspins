@@ -66,41 +66,48 @@ $('#btnStart').addEventListener('click', () => {
 /* ========================= Girar ruleta con SONIDO (Web Audio) - Usamos WebAudio para generar "ticks" sin archivos externos ========================= */
 btnSpin.addEventListener('click', () => spinWheel());
 
-function spinWheel(){
-  if(spinning) return;
+/* ========================= Girar ruleta con SONIDO (Web Audio) ========================= */
+btnSpin.addEventListener('click', () => spinWheel());
+
+function spinWheel() {
+  if (spinning) return;
   spinning = true;
   qSection.classList.add('hidden');
-  feedback.textContent = '';
+  if (feedback) feedback.textContent = '';
   btnSpin.disabled = true;
-  const totalSegments = 12; // aprox. como la imagen
+
+  const totalSegments = 12; // cantidad de divisiones de la ruleta
   const segmentAngle = 360 / totalSegments;
-  const finalAngle = 1440 + Math.random() * 1080; // 4–7 vueltas
-  const duration = 3500; // ms
+  const finalAngle = 1440 + Math.random() * 1080; // entre 4 y 7 vueltas
+  const duration = 3500; // duración total del giro (ms)
   const start = performance.now();
   let lastTickIndex = -1;
 
-  function frame(now){
-    const t = Math.min(1, (now - start)/duration);
-    // desaceleración cúbica
-    const eased = 1 - Math.pow(1 - t, 3);
+  function frame(now) {
+    const t = Math.min(1, (now - start) / duration);
+    const eased = 1 - Math.pow(1 - t, 3); // suaviza el frenado
     const angle = eased * finalAngle;
     wheelImg.style.transform = `rotate(${angle}deg)`;
-    // TICK cuando pasamos por una división del segmento
-    const idx = Math.floor(((angle % 360)+0.0001) / segmentAngle);
-    if(idx !== lastTickIndex){
+
+    // TICK de sonido cada vez que pasa por un segmento
+    const idx = Math.floor(((angle % 360) + 0.0001) / segmentAngle);
+    if (idx !== lastTickIndex) {
       playTick();
       lastTickIndex = idx;
     }
-    if(t < 1){
+
+    if (t < 1) {
       requestAnimationFrame(frame);
-    }else{
+    } else {
       spinning = false;
       btnSpin.disabled = false;
       showQuestion();
     }
   }
+
   requestAnimationFrame(frame);
 }
+
 
 // Sonido: un "click" corto con WebAudio (sin archivos)
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -250,6 +257,7 @@ function shuffle(arr){
   }
   return arr;
 }
+
 
 
 
