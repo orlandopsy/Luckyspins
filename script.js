@@ -135,11 +135,15 @@ function showQuestion(){
   answersForm.innerHTML = '';
   const letters = ['A','B','C','D'];
   current.a.forEach((opt, i) => {
-    const id = `opt_${Date.now()}_${i}`;
-    const row = document.createElement('label');
-    row.innerHTML = `<input type="radio" name="ans" id="${id}" value="${i}"> <span><strong>${letters[i]}.</strong> ${opt}</span>`;
-    answersForm.appendChild(row);
-  });
+  const id = `opt_${Date.now()}_${i}`;
+  const row = document.createElement('label');
+  row.innerHTML = `
+    <input type="radio" name="ans" id="${id}" value="${i}">
+    <span><strong>${letters[i]}.</strong> ${opt}</span>
+  `;
+  answersForm.appendChild(row);
+});
+
   btnSubmit.classList.remove('hidden');
   btnNext.classList.add('hidden');
   qSection.classList.remove('hidden');
@@ -257,6 +261,7 @@ function shuffle(arr){
   }
   return arr;
 }
+
 
 
 
